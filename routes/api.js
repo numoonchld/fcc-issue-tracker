@@ -92,6 +92,8 @@ module.exports = function (app) {
                         
                         if ( pairArr[0] === 'issue_title' || pairArr[0] === 'issue_text' || pairArr[0] === 'created_by' || pairArr[0] === 'assigned_to' || pairArr[0] === 'status_text' ){
                           queryObj[pairArr[0]] = pairArr[1];
+                        } else if ( pairArr[0] === 'created_on' || pairArr[0] === 'updated_on' ) {
+                          queryObj[pairArr[0]] = new Date(pairArr[1]); 
                         }
 
                       } else if (pairArr[0] === 'open') { 
@@ -149,6 +151,10 @@ module.exports = function (app) {
               else { 
                 
                 console.log('connected to db')
+                
+                var po_rnDate = new Date(Date.now());
+                // console.log(rnDate.getFullYear()+'-'+rnDate.getMonth()+'-'+rnDate.getDate());
+                
                 db.collection(project).insertOne(
                   
                   {
@@ -157,8 +163,10 @@ module.exports = function (app) {
                     created_by: req.body.created_by,
                     assigned_to: req.body.assigned_to,
                     status_text: req.body.status_text,
-                    created_on: new Date(Date.now()),
-                    updated_on: new Date(Date.now()),
+                    // created_on: new Date(  Date.now() ),
+                    // updated_on: new Date(  Date.now() ),
+                    created_on: po_rnDate.getFullYear()+'-'+po_rnDate.getMonth()+'-'+po_rnDate.getDate(),
+                    updated_on: po_rnDate.getFullYear()+'-'+po_rnDate.getMonth()+'-'+po_rnDate.getDate(),
                     open: true
                   }, function(err,callbackObj) {
                     
@@ -206,6 +214,7 @@ module.exports = function (app) {
               else {
 
                 console.log('connected to db', req.body._id)
+                var pu_rnDate = new Date(Date.now());
 
                 // return message if no update field is provided:
                 if (!req.body.issue_title && !req.body.issue_text && !req.body.created_by && !req.body.assigned_to && !req.body.status_text && !req.body.open ) {
@@ -214,18 +223,20 @@ module.exports = function (app) {
 
                   // update each field if user has entered it: issue_title
                   if (req.body.issue_title) {
+                    
+                    var pu_rnDate = new Date(Date.now());
 
                     db.collection(project).update(
                       { "_id": ObjectId(req.body._id) } ,
                       { 
                         $set: { 
                           issue_title: req.body.issue_title,
-                          updated_on: new Date(Date.now()),
+                          updated_on: pu_rnDate.getFullYear() + '-' + pu_rnDate.getMonth() + '-' + pu_rnDate.getDate(),
                           open: true
                         }
                       }, function(err,callbackObj){
                         if (err) {
-                          res.send('could not update: ', req.body._id, '; error updating issue_title')
+                          res.json( {message: 'could not update: ' + req.body._id + '; error updating issue_title'});
                         } else {
                           console.log(callbackObj.result.n);
                         }
@@ -242,12 +253,12 @@ module.exports = function (app) {
                       { 
                         $set: { 
                           issue_text: req.body.issue_text,
-                          updated_on: new Date(Date.now()),
+                          updated_on: pu_rnDate.getFullYear() + '-' + pu_rnDate.getMonth() + '-' + pu_rnDate.getDate(),
                           open: true
                         }
                       }, function(err,callbackObj){
                         if (err) {
-                          res.send('could not update: ', req.body._id, '; error updating issue_text')
+                          res.json( {message: 'could not update: ' + req.body._id + '; error updating issue_text'});
                         }
                       }
                     )
@@ -262,12 +273,12 @@ module.exports = function (app) {
                       { 
                         $set: { 
                           created_by: req.body.created_by,
-                          updated_on: new Date(Date.now()),
+                          updated_on: pu_rnDate.getFullYear() + '-' + pu_rnDate.getMonth() + '-' + pu_rnDate.getDate(),
                           open: true
                         }
                       }, function(err,callbackObj){
                         if (err) {
-                          res.send('could not update: ', req.body._id, '; error updating created_by')
+                          res.json( {message: 'could not update: ' + req.body._id + '; error updating created_by' } );
                         }
                       }
                     )
@@ -282,12 +293,12 @@ module.exports = function (app) {
                       { 
                         $set: { 
                           assigned_to: req.body.assigned_to,
-                          updated_on: new Date(Date.now()),
+                          updated_on: pu_rnDate.getFullYear() + '-' + pu_rnDate.getMonth() + '-' + pu_rnDate.getDate(),
                           open: true
                         }
                       }, function(err,callbackObj){
                         if (err) {
-                          res.send('could not update: ', req.body._id, '; error updating assigned_to')
+                          res.json({message: 'could not update: ' + req.body._id + ';  error updating assigned_to'});
                         }
                       }
                     )
@@ -302,18 +313,17 @@ module.exports = function (app) {
                       { 
                         $set: { 
                           status_text: req.body.status_text,
-                          updated_on: new Date(Date.now()),
+                          updated_on: pu_rnDate.getFullYear() + '-' + pu_rnDate.getMonth() + '-' + pu_rnDate.getDate(),
                           open: true
                         }
                       },function(err,callbackObj){
                         if (err) {
-                          res.send('could not update: ', req.body._id, '; error updating status_text')
+                          res.json({message: 'could not update: ' + req.body._id + ';  error updating status_text'});
                         }
                       }
                     )
 
                   }
-
 
                   // update each field if user has entered it: open: 'false'
                   if (req.body.open == 'false') {
@@ -323,11 +333,11 @@ module.exports = function (app) {
                       { 
                         $set: { 
                           open: false,
-                          updated_on: new Date(Date.now())
+                          updated_on: pu_rnDate.getFullYear() + '-' + pu_rnDate.getMonth() + '-' + pu_rnDate.getDate()
                         }
                       },function(err,callbackObj){
                         if (err) {
-                          res.send('could not update: ', req.body._id, '; error updating status_text')
+                          res.json({message: 'could not update: ' + req.body._id + ';  error updating status_text'});
                         }
                       }
                     )
@@ -355,7 +365,7 @@ module.exports = function (app) {
 
           console.log('--- DELETE:' ,req.body); 
           
-          if (!req.body._id) { res.send('_id error') }
+          if (!req.body._id) { res.json({message:'_id error'} ) }
           else { 
 
             MongoClient.connect(CONNECTION_STRING, function(err, db){
@@ -371,9 +381,9 @@ module.exports = function (app) {
                   if (err) {
                     console.error(err);
                   } else if (retDoc.result.n == 1) {
-                    res.send('deleted '+ req.body._id);
+                    res.json({ message: 'deleted '+ req.body._id});
                   } else {
-                    res.send('could not delete ' + req.body._id );
+                    res.json({message: 'could not delete ' + req.body._id} );
                   }
 
                 }

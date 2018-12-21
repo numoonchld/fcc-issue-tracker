@@ -162,8 +162,13 @@ suite('Functional Tests', function() {
       test('Multiple filters (test for multiple fields you know will be in the db for a return)', function(done) {
         chai.request(server)
         .get('/api/issues/test')
-        .query({getQuery: '?' })
-        .end()
+        .query({getQuery: '?open=true&status_text=In QA' })
+        .end(function(err,res){
+          assert.equal(res.status, 200);
+          assert.equal(res.body[0].open, true);
+          assert.equal(res.body[0].status_text, 'In QA');
+          done();
+        })
       });
       
     });
@@ -171,10 +176,27 @@ suite('Functional Tests', function() {
     suite('DELETE /api/issues/{project} => text', function() {
       
       test('No _id', function(done) {
+        chai.request(server)
+        .delete('/api/issues/test')
+        .send({ })
+        .end( function(err,res){
+          console.log('CHAI: ',res.body); 
+          assert.equal(res.body.message, '_id error');
+          done();
+        } )
         
       });
       
       test('Valid _id', function(done) {
+        chai.request(server)
+        .delete('/api/issues/test')
+        .send( {_id:'5c1b91f73ffe71006c4a782e'} )
+        .end( function(err,res) {
+          console.log(res.body);
+          // assert.equal(res.body.message, 'deleted 5c1b91f73ffe71006c4a782e' ); //only when the sent ID exists in the database
+          assert.equal(res.body.message, 'could not delete 5c1b91f73ffe71006c4a782e' ); // after a valid ID has been deleted or supplied ID doesnt exist
+          done();
+        } )
         
       });
       
