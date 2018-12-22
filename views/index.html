@@ -160,6 +160,7 @@
         });
       
         $('#testForm4').submit(function(e) {
+          
           $.ajax({
             url: 'https://fcc-issue-tracker-nmc.glitch.me/api/issues/issueTracker',
             type: 'get',
@@ -168,7 +169,9 @@
               $('#jsonResult').text(JSON.stringify(data));
             }
           });
+          
           e.preventDefault();
+          
         });
       
    </script>

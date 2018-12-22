@@ -48,7 +48,7 @@ module.exports = function (app) {
               else {
 
                 console.log('connected to db') 
-                console.log('query string is: ', req.query,' AND ', req.query.getQuery);
+                console.log('query string is: ', req.query,' ==> ', req.query.getQuery);
 
                 // https://docs.mongodb.com/manual/tutorial/iterate-a-cursor/#read-operations-cursors
                 // https://stackoverflow.com/a/49810038/3161273
@@ -74,7 +74,7 @@ module.exports = function (app) {
                     var queryArray = req.query.getQuery.split('&');
                   }
 
-                  console.log(queryArray)
+                  console.log('log pt.A:',queryArray)
                   
                   var queryObj = {}
 
@@ -90,11 +90,12 @@ module.exports = function (app) {
                       // Needs more data validation for queries: 
                       if (pairArr[0] !== 'open' ) {
                         
-                        if ( pairArr[0] === 'issue_title' || pairArr[0] === 'issue_text' || pairArr[0] === 'created_by' || pairArr[0] === 'assigned_to' || pairArr[0] === 'status_text' ){
+                        if ( pairArr[0] === 'issue_title' || pairArr[0] === 'issue_text' || pairArr[0] === 'created_by' || pairArr[0] === 'assigned_to' || pairArr[0] === 'status_text' || pairArr[0] === 'created_on' || pairArr[0] === 'updated_on') {
                           queryObj[pairArr[0]] = pairArr[1];
-                        } else if ( pairArr[0] === 'created_on' || pairArr[0] === 'updated_on' ) {
-                          queryObj[pairArr[0]] = new Date(pairArr[1]); 
-                        }
+                        } 
+                        // else if ( pairArr[0] === 'created_on' || pairArr[0] === 'updated_on' ) {
+                        //   queryObj[pairArr[0]] = new Date(pairArr[1]); 
+                        // }
 
                       } else if (pairArr[0] === 'open') { 
 
@@ -109,17 +110,13 @@ module.exports = function (app) {
 
                   }
 
-                  console.log(queryObj);
+                  console.log('log pt.B:',queryObj);
 
                   db.collection(project).find(queryObj).toArray( function(err,retDB){
                     res.send(retDB);
                   })
 
-
-
                 }
-
-
 
               }
 
