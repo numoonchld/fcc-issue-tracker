@@ -3,7 +3,9 @@
 
 Project Issue Tracker
 
-[App Interface Page](https://fcc-issue-tracker-nmc.glitch.me/)
+[issueTracker](https://fcc-issue-tracker-nmc.glitch.me/issueTracker)
+
+[API Test Page](https://fcc-issue-tracker-nmc.glitch.me/)
 
 1) SET NODE_ENV to `test` without quotes and set DB to your mongo connection string in .env file
 2) Complete the project in `routes/api.js` or by creating a handler/controller
